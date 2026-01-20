@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Vendas - Alemão Gás</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #ff7a00 0%, #ff6b00 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        .data-hora {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .caixa {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #ff7a00;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ff7a00;
+            padding-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #ff7a00;
+            box-shadow: 0 0 5px rgba(255, 122, 0, 0.3);
+        }
+
+        input[type="number"] {
+            font-size: 16px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #ff7a00;
+            box-shadow: 0 0 5px rgba(255, 122, 0, 0.3);
+        }
+
+        select:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #ff7a00;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ff6b00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 122, 0, 0.3);
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-info {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #0b7dda;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            font-size: 13px;
+            color: #333;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        .texto-centro {
+            text-align: center;
+        }
+
+        .resumo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-resumo {
+            background: #f9f9f9;
+            border-left: 4px solid #ff7a00;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .card-resumo h3 {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .card-resumo .valor {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff7a00;
+        }
+
+        .card-resumo.negativo .valor {
+            color: #d32f2f;
+        }
+
+        .card-resumo.positivo .valor {
+            color: #4caf50;
+        }
+
+        .btn-grupo {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .vazio {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+        }
+
+        input[type="text"].bloqueado, input[type="number"].bloqueado {
+            background: #f0f0f0;
+            pointer-events: none;
+        }
+
+        .fiado {
+            background: #fff3e0;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            header, .btn-grupo, button {
+                display: none;
+            }
+        }
+
+        .linha-totais {
+            background: #fffbf0;
+            font-weight: bold;
+        }
+
+        .linha-lucro {
+            background: #e8f5e9;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        input[readonly] {
+            background: #f9f9f9;
+            cursor: not-allowed;
+        }
+
+        .pag-dinheiro {
+            background: #c8e6c9 !important;
+            border-color: #66bb6a !important;
+        }
+
+        .pag-pix {
+            background: #e1bee7 !important;
+            border-color: #ab47bc !important;
+        }
+
+        .pag-cartao {
+            background: #f8bbd0 !important;
+            border-color: #ec407a !important;
+        }
+
+        .pag-fiado {
+            background: #ffcccc !important;
+            border-color: #d32f2f !important;
+        }
+
+        select.pag-dinheiro {
+            background-color: #c8e6c9 !important;
+        }
+
+        select.pag-pix {
+            background-color: #e1bee7 !important;
+        }
+
+        select.pag-cartao {
+            background-color: #f8bbd0 !important;
+        }
+
+        select.pag-fiado {
+            background-color: #ffcccc !important;
+        }
+
+        .caixa-minimizavel {
+            transition: all 0.3s ease;
+        }
+
+        .caixa-minimizavel.minimizado {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
+        .btn-toggle {
+            background: #ff7a00;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .btn-toggle:hover {
+            background: #ff6b00;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-section h2 {
+            margin: 0;
+            flex: 1;
+        }
+
+        .header-section > div {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* LOGIN */
+        #loginContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.5s;
+        }
+
+        #loginContainer.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 400px;
+            animation: slideIn 0.6s;
+        }
+
+        .login-box h1 {
+            color: #ff7a00;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #ff7a00;
+            box-shadow: 0 0 10px rgba(255,122,0,0.3);
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ff7a00, #ff6b00);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .login-form button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* FUNCIONÁRIO */
+        #selecionarFuncionarioContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #selecionarFuncionarioContainer.visible {
+            display: flex;
+        }
+
+        .funcionario-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 500px;
+            animation: slideIn 0.6s;
+        }
+
+        .funcionario-box h2 {
+            color: #ff7a00;
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 30px;
+            border: none;
+            padding: 0;
+        }
+
+        .funcionarios-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-funcionario {
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-funcionario:hover {
+            transform: translateY(-5px);
+        }
+
+        /* MAIN */
+        .main-container {
+            display: none;
+        }
+
+        .main-container.visible {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        #logoutBtn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        #logoutBtn:hover {
+            background: #b71c1c;
+        }
+
+        /* CONFIGURAÇÕES */
+        #configBtn {
+            position: fixed;
+            top: 20px;
+            right: 140px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            z-index: 1000;
+        }
+
+        #configBtn:hover {
+            background: #0b7dda;
+        }
+
+        /* MODAL CONFIGURAÇÃO */
+        #configModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9998;
+        }
+
+        #configModal.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        .config-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #2196F3;
+            padding-bottom: 15px;
+        }
+
+        .config-header h2 {
+            color: #2196F3;
+            font-size: 24px;
+            margin: 0;
+            border: none;
+        }
+
+        .config-close {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .config-close:hover {
+            background: #b71c1c;
+        }
+
+        .config-tab-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 10px 15px;
+            margin-right: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .config-tab-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .config-tab-btn.active {
+            background: #2196F3;
+            color: white;
+        }
+
+        .config-aba {
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .config-section {
+            margin-bottom: 30px;
+        }
+
+        .config-section h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #2196F3;
+            padding-left: 12px;
+        }
+
+        .balancete-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .balancete-table tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .balancete-table td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .balancete-table td:last-child {
+            text-align: right;
+            font-weight: bold;
+            color: #2196F3;
+        }
+
+        .balancete-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        #tabelaVendas {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 13px;
+        }
+
+        #tabelaVendas thead {
+            background: linear-gradient(135deg, #ff7a00 0%, #ff6b00 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        #tabelaVendas th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+            border: none;
+            white-space: nowrap;
+        }
+
+        #tabelaVendas td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
+        }
+
+        #tabelaVendas tbody tr {
+            transition: background 0.2s;
+        }
+
+        #tabelaVendas tbody tr:hover {
+            background: #fff9f0;
+        }
+
+        #tabelaVendas tbody tr.cliente-especial {
+            background: #fff3e0;
+        }
+
+        #tabelaVendas tbody tr.cliente-especial:hover {
+            background: #ffe0b2;
+        }
+
+        #tabelaVendas input, #tabelaVendas select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        #tabelaVendas input:focus, #tabelaVendas select:focus {
+            outline: none;
+            border-color: #ff7a00;
+            box-shadow: 0 0 3px rgba(255, 122, 0, 0.3);
+        }
+
+        .lucro-real-mensal {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .lucro-real-mensal h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            border: none;
+            padding: 0;
+            color: white;
+        }
+
+        .lucro-real-mensal .valor-lucro {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .lucro-negativo {
+            background: linear-gradient(135deg, #d32f2f, #f44336) !important;
+        }
+
+        /* USUÁRIO LOGADO */
+        .usuario-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        /* CLIENTE ESPECIAL */
+        tr.cliente-especial {
+            background: #fff3e0 !important;
+        }
+
+        .btn-checkbox-venda {
+            background: none;
+            border: 2px solid #ddd;
+            width: 25px;
+            height: 25px;
+            padding: 0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .btn-checkbox-venda.selecionada {
+            background: #2196F3 !important;
+            border-color: #2196F3 !important;
+        }
+
+        .btn-deletar-selecionadas {
+            background: #d32f2f !important;
+            padding: 10px 20px !important;
+            font-size: 14px !important;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-cliente {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div id="loginContainer">
+        <div class="login-box">
+            <h1>💰 ALEMÃO GÁS</h1>
+            <p>Sistema de Vendas</p>
+            <form class="login-form" onsubmit="fazerLogin(event)">
+                <input type="text" id="nomeUsuario" placeholder="Usuário" required autofocus>
+                <input type="password" id="senhaUsuario" placeholder="Senha" required>
+                <button type="submit">🔓 Acessar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SELEÇÃO DE FUNCIONÁRIO -->
+    <div id="selecionarFuncionarioContainer">
+        <div class="funcionario-box">
+            <h2>👤 Selecione o Funcionário</h2>
+            <div class="funcionarios-grid">
+                <button class="btn-funcionario" type="button" onclick="selecionarFuncionario('BRENO')">👨 BRENO</button>
+                <button class="btn-funcionario" type="button" onclick="selecionarFuncionario('GEISIANE')">👩 GEISIANE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTÃO CONFIGURAÇÃO -->
+    <button id="configBtn" onclick="abrirConfiguracao()" style="display: none;">⚙️</button>
+
+    <!-- BOTÃO LOGOUT -->
+    <button id="logoutBtn" onclick="fazerLogout()" style="display: none;">🚪 Sair</button>
+
+    <!-- MODAL CONFIGURAÇÃO -->
+    <div id="configModal">
+        <div class="config-content">
+            <div class="config-header">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="config-tab-btn active" onclick="mostrarAbaBalancete()">⚙️ Balancete Mensal</button>
+                    <button class="config-tab-btn" onclick="mostrarAbaEntregadores()">👤 Entregadores</button>
+                </div>
+                <button class="config-close" onclick="fecharConfiguracao()">✕</button>
+            </div>
+
+            <!-- ABA BALANCETE -->
+            <div id="abaBalancete" class="config-aba">
+                <h3>📊 Total de Vendas do Mês</h3>
+                <table class="balancete-table">
+                    <tr>
+                        <td>💵 Vendas em Dinheiro</td>
+                        <td>R$ <span id="totalDinheiroMes">0,00</span></td>
+                    </tr>
+                    <tr>
+                        <td>📱 Vendas em Pix</td>
+                        <td>R$ <span id="totalPixMes">0,00</span></td>
+                    </tr>
+                    <tr>
+                        <td>💳 Vendas em Cartão</td>
+                        <td>R$ <span id="totalCartaoMes">0,00</span></td>
+                    </tr>
+                    <tr style="background: #e3f2fd; font-weight: bold;">
+                        <td>✅ Total Recebido</td>
+                        <td>R$ <span id="totalRecebidoMes">0,00</span></td>
+                    </tr>
+                    <tr>
+                        <td>❌ Total Fiado</td>
+                        <td>R$ <span id="totalFiadoMes">0,00</span></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="config-section">
+                <h3>📦 Quantidade de Produtos Vendidos</h3>
+                <table class="balancete-table">
+                    <tr>
+                        <td>⛽ Gás</td>
+                        <td><span id="totalGasQtdMes">0</span> un</td>
+                    </tr>
+                    <tr>
+                        <td>💧 Água</td>
+                        <td><span id="totalAguaQtdMes">0</span> un</td>
+                    </tr>
+                    <tr>
+                        <td>🔧 Regulador</td>
+                        <td><span id="totalReguladorQtdMes">0</span> un</td>
+                    </tr>
+                    <tr>
+                        <td>🔗 Mangueira</td>
+                        <td><span id="totalMangueiraQtdMes">0</span> un</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="config-section">
+                <h3>💰 Custos e Lucro</h3>
+                <table class="balancete-table">
+                    <tr>
+                        <td>Custo Total de Produtos</td>
+                        <td>R$ <span id="custoProdutosMes">0,00</span></td>
+                    </tr>
+                    <tr>
+                        <td>Gastos Diversos</td>
+                        <td>R$ <span id="totalGastosMes">0,00</span></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="lucro-real-mensal" id="lucroMensalBox">
+                <h3>💎 LUCRO TOTAL DO MÊS</h3>
+                <div class="valor-lucro">R$ <span id="lucroTotalMes">0,00</span></div>
+            </div>
+            </div>
+
+            <!-- ABA ENTREGADORES -->
+            <div id="abaEntregadores" class="config-aba" style="display: none;">
+                <div class="config-section">
+                    <h3>👤 Gerenciar Entregadores</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <input id="novoEntregador" type="text" placeholder="Digite o nome do entregador" style="flex: 1;" onkeypress="if(event.key==='Enter') adicionarEntregador()">
+                        <button class="btn-primary" onclick="adicionarEntregador()">➕ Adicionar</button>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <label style="font-weight: bold;">Entregadores Cadastrados:</label>
+                        <div id="listaEntregadores" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="main-container">
+    <div class="container">
+        <!-- USUÁRIO LOGADO -->
+        <div class="usuario-info">
+            👤 <span id="usuarioLogado">-</span>
+        </div>
+
+        <header>
+            <h1>💰 ALEMÃO GÁS – SISTEMA DE VENDAS</h1>
+            <div class="data-hora">📅 <span id="dataHoje"></span> | ⏰ <span id="horaAtual"></span></div>
+        </header>
+
+        <!-- CUSTOS DO PRODUTO -->
+        <div class="caixa">
+            <div class="header-section">
+                <h2>💵 Custos dos Produtos</h2>
+                <button class="btn-toggle" onclick="toggleCustos()">▼ Minimizar</button>
+            </div>
+            <div class="caixa-minimizavel" id="boxCustos">
+                <div class="row">
+                    <div>
+                        <label>Custo Unitário do Gás (R$)</label>
+                        <input id="custoGas" type="number" placeholder="0,00" value="0" step="0.01" onchange="calcular()">
+                    </div>
+                    <div>
+                        <label>Custo Unitário da Água (R$)</label>
+                        <input id="custoAgua" type="number" placeholder="0,00" value="0" step="0.01" onchange="calcular()">
+                    </div>
+                    <div>
+                        <label>Custo Unitário do Regulador (R$)</label>
+                        <input id="custoRegulador" type="number" placeholder="0,00" value="0" step="0.01" onchange="calcular()">
+                    </div>
+                    <div>
+                        <label>Custo Unitário da Mangueira (R$)</label>
+                        <input id="custoMangueira" type="number" placeholder="0,00" value="0" step="0.01" onchange="calcular()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LANÇAR VENDAS -->
+        <div class="caixa">
+            <div class="header-section">
+                <h2>📝 Lançar Venda</h2>
+                <div>
+                    <button class="btn-primary" onclick="novaVenda()" style="margin-right: 8px;">➕ Nova Venda</button>
+                    <button class="btn-info" onclick="salvarBackup()" style="margin-right: 8px;">💾 Backup</button>
+                    <button class="btn-info" onclick="document.getElementById('restore').click()" style="margin-right: 8px;">📂 Restaurar</button>
+                    <input type="file" id="restore" style="display:none" accept=".json" onchange="restaurarBackup(this.files[0])">
+                    <button id="btnDeletarSelecionadas" class="btn-deletar-selecionadas" onclick="deletarSelecionadas()" style="display: none;">🗑️ Deletar</button>
+                </div>
+            </div>
+
+            <div style="overflow-x: auto; margin-top: 15px;">
+                <table id="tabelaVendas" style="width: 100%; font-size: 13px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px; text-align: center;">✓</th>
+                            <th style="width: 50px; text-align: center;">Hora</th>
+                            <th style="min-width: 120px;">Cliente</th>
+                            <th style="min-width: 100px;">Obs</th>
+                            <th style="width: 90px; text-align: center;">Produto</th>
+                            <th style="width: 70px; text-align: center;">Qtd</th>
+                            <th style="width: 100px; text-align: center;">Pagamento</th>
+                            <th style="width: 80px; text-align: center;">Valor</th>
+                            <th style="min-width: 100px;">Entregador</th>
+                            <th style="width: 60px; text-align: center;">⭐</th>
+                            <th style="width: 80px; text-align: center;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- GASTOS E ANOTAÇÕES -->
+        <div class="caixa">
+            <div class="header-section">
+                <h2>📌 Gastos & Anotações do Dia</h2>
+                <button class="btn-toggle" onclick="toggleGastos()">▼ Minimizar</button>
+            </div>
+            <div class="caixa-minimizavel" id="boxGastos">
+                <h3 style="color: #333; margin-top: 20px; margin-bottom: 10px;">Lançar Gasto</h3>
+                <div class="row">
+                    <div>
+                        <label>Descrição do Gasto</label>
+                        <input id="descGasto" type="text" placeholder="Ex: Combustível, Almoço...">
+                    </div>
+                    <div>
+                        <label>Valor (R$)</label>
+                        <input id="valorGasto" type="number" placeholder="0,00" step="0.01">
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button class="btn-primary" onclick="adicionarGasto()">➕ Adicionar Gasto</button>
+                    </div>
+                </div>
+
+                <h3 style="color: #333; margin-top: 20px; margin-bottom: 10px;">Gastos do Dia</h3>
+                <div style="overflow-x: auto;">
+                    <table id="tabelaGastos">
+                        <thead>
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Valor (R$)</th>
+                                <th>Cor</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <h3 style="color: #333; margin-top: 20px; margin-bottom: 10px;">Anotações do Dia</h3>
+                <textarea id="anotacoes" placeholder="Anotações importantes do dia..."></textarea>
+            </div>
+        </div>
+
+        <!-- RESUMO DO DIA -->
+        <div class="caixa">
+            <h2>📊 Resumo do Dia</h2>
+            
+            <div class="resumo-grid">
+                <div class="card-resumo" style="background: #ffe0b2; border-left-color: #ff7a00;">
+                    <h3>Total Gás Vendido</h3>
+                    <div class="valor" style="color: #e65100;"><span id="totalGasQtd">0</span> un</div>
+                </div>
+                <div class="card-resumo" style="background: #b3e5fc; border-left-color: #0288d1;">
+                    <h3>Total Água Vendida</h3>
+                    <div class="valor" style="color: #01579b;"><span id="totalAguaQtd">0</span> un</div>
+                </div>
+                <div class="card-resumo">
+                    <h3>Total Regulador Vendido</h3>
+                    <div class="valor"><span id="totalReguladorQtd">0</span> un</div>
+                </div>
+                <div class="card-resumo">
+                    <h3>Total Mangueira Vendida</h3>
+                    <div class="valor"><span id="totalMangueiraQtd">0</span> un</div>
+                </div>
+                <div class="card-resumo" style="background: #c8e6c9; border-left-color: #66bb6a;">
+                    <h3>Recebido em Dinheiro</h3>
+                    <div class="valor" style="color: #2e7d32;">R$ <span id="totalDinheiro">0,00</span></div>
+                </div>
+                <div class="card-resumo" style="background: #e1bee7; border-left-color: #ab47bc;">
+                    <h3>Recebido em Pix</h3>
+                    <div class="valor" style="color: #6a1b9a;">R$ <span id="totalPix">0,00</span></div>
+                </div>
+                <div class="card-resumo" style="background: #e0e0e0; border-left-color: #616161;">
+                    <h3>Recebido em Cartão</h3>
+                    <div class="valor" style="color: #424242;">R$ <span id="totalCartao">0,00</span></div>
+                </div>
+                <div class="card-resumo">
+                    <h3>❌ Total Fiado</h3>
+                    <div class="valor" style="color: #d32f2f;">R$ <span id="totalFiado">0,00</span></div>
+                </div>
+                <div class="card-resumo">
+                    <h3>Total Gastos do Dia</h3>
+                    <div class="valor">R$ <span id="totalGastos">0,00</span></div>
+                </div>
+                <div class="card-resumo">
+                    <h3>Custo do Estoque (Todos)</h3>
+                    <div class="valor">R$ <span id="custoProdutos">0,00</span></div>
+                </div>
+            </div>
+
+            <div class="resumo-grid">
+                <div class="card-resumo" style="background: #ffe0b2; border-left-color: #ff7a00;">
+                    <h3>Total de Vendas (sem fiado)</h3>
+                    <div class="valor" style="color: #e65100;">R$ <span id="totalVendas">0,00</span></div>
+                </div>
+                <div class="card-resumo" style="background: #fff9e6; border-left-color: #4caf50;">
+                    <h3>💰 LUCRO REAL DO DIA</h3>
+                    <div class="valor" id="lucroReal" style="color: #4caf50;">R$ 0,00</div>
+                </div>
+            </div>
+
+            <div class="btn-grupo" style="margin-top: 20px;">
+                <button class="btn-success" onclick="gerarPDFDiario()">📄 PDF Diário</button>
+                <button class="btn-success" onclick="gerarPDFMensal()">📊 PDF Mensal</button>
+                <button class="btn-info" onclick="window.print()">🖨️ Imprimir</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        const USUARIO = 'ALEMAO';
+        const SENHA = '96103719';
+        const LOGIN_KEY = 'alemaoLogin';
+        const FUNCIONARIO_KEY = 'funcionario';
+        const STORAGE_KEY = 'alemaoGasVendas';
+
+        // LOGIN
+        function fazerLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('nomeUsuario').value.trim();
+            const pass = document.getElementById('senhaUsuario').value;
+
+            if (user !== USUARIO || pass !== SENHA) {
+                alert('❌ Usuário ou senha incorretos!');
+                document.getElementById('nomeUsuario').value = '';
+                document.getElementById('senhaUsuario').value = '';
+                return;
+            }
+
+            localStorage.setItem(LOGIN_KEY, 'true');
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('selecionarFuncionarioContainer').classList.add('visible');
+        }
+
+        function selecionarFuncionario(func) {
+            localStorage.setItem(FUNCIONARIO_KEY, func);
+            document.getElementById('selecionarFuncionarioContainer').classList.remove('visible');
+            document.querySelector('.main-container').classList.add('visible');
+            document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('configBtn').style.display = 'block';
+            document.getElementById('usuarioLogado').textContent = func;
+            iniciar();
+        }
+
+        function fazerLogout() {
+            localStorage.removeItem(LOGIN_KEY);
+            localStorage.removeItem(FUNCIONARIO_KEY);
+            location.reload();
+        }
+
+        function verificarLogin() {
+            if (!localStorage.getItem(LOGIN_KEY)) return;
+            const func = localStorage.getItem(FUNCIONARIO_KEY);
+            if (!func) {
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('selecionarFuncionarioContainer').classList.add('visible');
+                return;
+            }
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.querySelector('.main-container').classList.add('visible');
+            document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('configBtn').style.display = 'block';
+            document.getElementById('usuarioLogado').textContent = func;
+            iniciar();
+        }
+
+        function iniciar() {
+            atualizarDataHora();
+            carregarDados();
+            novaVenda();
+        }
+
+        // CONFIGURAÇÕES - BALANCETE MENSAL
+        function abrirConfiguracao() {
+            calcularBalanceteMensal();
+            document.getElementById('configModal').classList.add('active');
+        }
+
+        function fecharConfiguracao() {
+            document.getElementById('configModal').classList.remove('active');
+        }
+
+        function calcularBalanceteMensal() {
+            const storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+            const hoje = new Date();
+            const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
+            const anoAtual = hoje.getFullYear();
+
+            let totalGasQtdMes = 0, totalAguaQtdMes = 0, totalReguladorQtdMes = 0, totalMangueiraQtdMes = 0;
+            let totalDinheiroMes = 0, totalPixMes = 0, totalCartaoMes = 0, totalFiadoMes = 0;
+            let totalGastosMes = 0, custoProdutosMes = 0;
+
+            for (const [data, dados] of Object.entries(storage)) {
+                const partes = data.split('/');
+                if (partes.length === 3 && partes[1] === mesAtual && partes[2] === String(anoAtual)) {
+                    // Vendas
+                    if (dados.vendas) {
+                        dados.vendas.forEach(v => {
+                            const produto = v.produto;
+                            const quantidade = parseFloat(v.quantidade) || 0;
+                            const pagamento = v.pagamento;
+                            const valor = parseFloat(v.valor) || 0;
+
+                            if (produto === 'gas') totalGasQtdMes += quantidade;
+                            if (produto === 'agua') totalAguaQtdMes += quantidade;
+                            if (produto === 'regulador') totalReguladorQtdMes += quantidade;
+                            if (produto === 'mangueira') totalMangueiraQtdMes += quantidade;
+
+                            if (pagamento === 'dinheiro') totalDinheiroMes += valor;
+                            if (pagamento === 'pix') totalPixMes += valor;
+                            if (pagamento === 'cartao') totalCartaoMes += valor;
+                            if (pagamento === 'fiado') totalFiadoMes += valor;
+                        });
+                    }
+
+                    // Gastos
+                    if (dados.gastos) {
+                        dados.gastos.forEach(g => {
+                            totalGastosMes += parseFloat(g.valor) || 0;
+                        });
+                    }
+
+                    // Custos de produtos
+                    const custoGas = parseFloat(dados.custoGas) || 0;
+                    const custoAgua = parseFloat(dados.custoAgua) || 0;
+                    const custoRegulador = parseFloat(dados.custoRegulador) || 0;
+                    const custoMangueira = parseFloat(dados.custoMangueira) || 0;
+                    custoProdutosMes += (totalGasQtdMes * custoGas) + (totalAguaQtdMes * custoAgua) + (totalReguladorQtdMes * custoRegulador) + (totalMangueiraQtdMes * custoMangueira);
+                }
+            }
+
+            // Calcular lucro
+            const totalRecebidoMes = totalDinheiroMes + totalPixMes + totalCartaoMes;
+            const lucroTotalMes = totalRecebidoMes - custoProdutosMes - totalGastosMes;
+
+            // Atualizar interface
+            document.getElementById('totalDinheiroMes').textContent = totalDinheiroMes.toFixed(2).replace('.', ',');
+            document.getElementById('totalPixMes').textContent = totalPixMes.toFixed(2).replace('.', ',');
+            document.getElementById('totalCartaoMes').textContent = totalCartaoMes.toFixed(2).replace('.', ',');
+            document.getElementById('totalRecebidoMes').textContent = totalRecebidoMes.toFixed(2).replace('.', ',');
+            document.getElementById('totalFiadoMes').textContent = totalFiadoMes.toFixed(2).replace('.', ',');
+            
+            document.getElementById('totalGasQtdMes').textContent = totalGasQtdMes;
+            document.getElementById('totalAguaQtdMes').textContent = totalAguaQtdMes;
+            document.getElementById('totalReguladorQtdMes').textContent = totalReguladorQtdMes;
+            document.getElementById('totalMangueiraQtdMes').textContent = totalMangueiraQtdMes;
+            
+            document.getElementById('custoProdutosMes').textContent = custoProdutosMes.toFixed(2).replace('.', ',');
+            document.getElementById('totalGastosMes').textContent = totalGastosMes.toFixed(2).replace('.', ',');
+            
+            document.getElementById('lucroTotalMes').textContent = lucroTotalMes.toFixed(2).replace('.', ',');
+
+            // Mudar cor do lucro
+            const lucroBox = document.getElementById('lucroMensalBox');
+            if (lucroTotalMes < 0) {
+                lucroBox.classList.add('lucro-negativo');
+            } else {
+                lucroBox.classList.remove('lucro-negativo');
+            }
+        }
+
+        // Fechar modal ao clicar fora
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('configModal');
+            if (e.target === modal) {
+                fecharConfiguracao();
+            }
+        });
+
+        // Abas do modal de configuração
+        function mostrarAbaBalancete() {
+            document.getElementById('abaBalancete').style.display = 'block';
+            document.getElementById('abaEntregadores').style.display = 'none';
+            document.querySelectorAll('.config-tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function mostrarAbaEntregadores() {
+            document.getElementById('abaBalancete').style.display = 'none';
+            document.getElementById('abaEntregadores').style.display = 'block';
+            document.querySelectorAll('.config-tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            carregarListaEntregadores();
+        }
+
+        // Gerenciar entregadores
+        const ENTREGADORES_KEY = `entregadores_${FUNCIONARIO_KEY}`;
+
+        function adicionarEntregador() {
+            const input = document.getElementById('novoEntregador');
+            const nome = input.value.trim().toUpperCase();
+
+            if (!nome) {
+                alert('❌ Digite o nome do entregador!');
+                return;
+            }
+
+            let entregadores = JSON.parse(localStorage.getItem(ENTREGADORES_KEY) || '[]');
+            
+            if (entregadores.includes(nome)) {
+                alert('⚠️ Este entregador já existe!');
+                return;
+            }
+
+            entregadores.push(nome);
+            entregadores.sort();
+            localStorage.setItem(ENTREGADORES_KEY, JSON.stringify(entregadores));
+            input.value = '';
+            carregarListaEntregadores();
+            atualizarSelectEntregadores();
+        }
+
+        function removerEntregador(nome) {
+            if (!confirm(`Tem certeza que deseja remover ${nome}?`)) return;
+            
+            let entregadores = JSON.parse(localStorage.getItem(ENTREGADORES_KEY) || '[]');
+            entregadores = entregadores.filter(e => e !== nome);
+            localStorage.setItem(ENTREGADORES_KEY, JSON.stringify(entregadores));
+            carregarListaEntregadores();
+            atualizarSelectEntregadores();
+        }
+
+        function carregarListaEntregadores() {
+            const lista = document.getElementById('listaEntregadores');
+            let entregadores = JSON.parse(localStorage.getItem(ENTREGADORES_KEY) || '[]');
+            
+            lista.innerHTML = '';
+            if (entregadores.length === 0) {
+                lista.innerHTML = '<p style="color: #999; font-style: italic;">Nenhum entregador cadastrado</p>';
+                return;
+            }
+
+            entregadores.forEach(nome => {
+                const badge = document.createElement('div');
+                badge.style.cssText = `
+                    background: #2196F3;
+                    color: white;
+                    padding: 8px 12px;
+                    border-radius: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    cursor: pointer;
+                    user-select: none;
+                `;
+                badge.innerHTML = `${nome} <span style="cursor: pointer; font-weight: bold;">✕</span>`;
+                badge.onclick = (e) => {
+                    e.stopPropagation();
+                    removerEntregador(nome);
+                };
+                lista.appendChild(badge);
+            });
+        }
+
+        function atualizarSelectEntregadores() {
+            const entregadores = JSON.parse(localStorage.getItem(ENTREGADORES_KEY) || '[]');
+            
+            // Atualizar todos os selects de entregador nas tabelas
+            document.querySelectorAll('.select-entregador').forEach(select => {
+                const valor = select.value;
+                select.innerHTML = '<option value="">Selecione...</option>';
+                entregadores.forEach(nome => {
+                    const option = document.createElement('option');
+                    option.value = nome;
+                    option.textContent = nome;
+                    select.appendChild(option);
+                });
+                select.value = valor;
+            });
+        }
+
+        // Atualizar data e hora
+        function atualizarDataHora() {
+            const agora = new Date();
+            document.getElementById('dataHoje').textContent = agora.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('horaAtual').textContent = agora.toLocaleTimeString('pt-BR');
+        }
+
+        atualizarDataHora();
+        setInterval(atualizarDataHora, 1000);
+
+        // Minimizar/Expandir seções
+        function toggleCustos() {
+            const box = document.getElementById('boxCustos');
+            const btn = event.target;
+            box.classList.toggle('minimizado');
+            btn.textContent = box.classList.contains('minimizado') ? '▶ Expandir' : '▼ Minimizar';
+        }
+
+        function toggleGastos() {
+            const box = document.getElementById('boxGastos');
+            const btn = event.target;
+            box.classList.toggle('minimizado');
+            btn.textContent = box.classList.contains('minimizado') ? '▶ Expandir' : '▼ Minimizar';
+        }
+
+        // Nova Venda
+        function novaVenda() {
+            const tbody = document.querySelector('#tabelaVendas tbody');
+            const tr = document.createElement('tr');
+            const hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            tr.innerHTML = `
+                <td class="texto-centro"><button class="btn-checkbox-venda" onclick="selecionarVenda(this)"></button></td>
+                <td class="texto-centro">${hora}</td>
+                <td><input type="text" class="cliente" placeholder="Nome do cliente"></td>
+                <td><input type="text" class="observacao" placeholder="Obs da venda"></td>
+                <td style="padding: 8px;">
+                    <select class="produto">
+                        <option value="">Selecione...</option>
+                        <option value="gas">⛽ Gás</option>
+                        <option value="agua">💧 Água</option>
+                        <option value="regulador">🔧 Regulador</option>
+                        <option value="mangueira">🔗 Mangueira</option>
+                    </select>
+                </td>
+                <td class="texto-centro"><input type="number" class="quantidade" min="0" step="1" placeholder="Qtd"></td>
+                <td style="padding: 8px;">
+                    <select class="pagamento">
+                        <option value="">Selecione...</option>
+                        <option value="dinheiro">💵 Dinheiro</option>
+                        <option value="pix">📱 Pix</option>
+                        <option value="cartao">💳 Cartão</option>
+                        <option value="fiado">❌ Fiado</option>
+                    </select>
+                </td>
+                <td class="texto-centro"><input type="number" class="valor" min="0" step="0.01" placeholder="0,00"></td>
+                <td style="padding: 8px;">
+                    <select class="entregador select-entregador">
+                        <option value="">Selecione...</option>
+                    </select>
+                </td>
+                <td class="texto-centro"><input type="checkbox" class="checkbox-cliente" onchange="marcarClienteEspecial(this)" title="Marcar como cliente especial"></td>
+                <td class="texto-centro">
+                    <button class="btn-edit" onclick="editarVenda(this)" style="display: none;">✏️</button>
+                </td>
+            `;
+
+            tr.querySelectorAll('input, select').forEach(inp => {
+                inp.addEventListener('input', calcular);
+                inp.addEventListener('change', calcular);
+                inp.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        travarVenda(tr);
+                        novaVenda();
+                    }
+                });
+            });
+
+            const selectPagamento = tr.querySelector('.pagamento');
+            selectPagamento.addEventListener('change', (e) => {
+                selectPagamento.classList.remove('pag-dinheiro', 'pag-pix', 'pag-cartao', 'pag-fiado');
+                if (e.target.value === 'dinheiro') selectPagamento.classList.add('pag-dinheiro');
+                if (e.target.value === 'pix') selectPagamento.classList.add('pag-pix');
+                if (e.target.value === 'cartao') selectPagamento.classList.add('pag-cartao');
+                if (e.target.value === 'fiado') selectPagamento.classList.add('pag-fiado');
+            });
+
+            tbody.appendChild(tr);
+            
+            // Preencher select de entregadores
+            const selectEntregador = tr.querySelector('.entregador');
+            const entregadores = JSON.parse(localStorage.getItem(ENTREGADORES_KEY) || '[]');
+            entregadores.forEach(nome => {
+                const option = document.createElement('option');
+                option.value = nome;
+                option.textContent = nome;
+                selectEntregador.appendChild(option);
+            });
+            
+            tr.querySelector('.cliente').focus();
+        }
+
+        function selecionarVenda(btn) {
+            const tr = btn.closest('tr');
+            btn.classList.toggle('selecionada');
+            atualizarBtnDeletar();
+        }
+
+        function marcarClienteEspecial(checkbox) {
+            const tr = checkbox.closest('tr');
+            if (checkbox.checked) {
+                tr.classList.add('cliente-especial');
+            } else {
+                tr.classList.remove('cliente-especial');
+            }
+        }
+
+        function atualizarBtnDeletar() {
+            const selecionadas = document.querySelectorAll('#tabelaVendas tbody .btn-checkbox-venda.selecionada').length;
+            const btn = document.getElementById('btnDeletarSelecionadas');
+            if (selecionadas > 0) {
+                btn.style.display = 'inline-block';
+                btn.textContent = `🗑️ Deletar ${selecionadas} Selecionada(s)`;
+            } else {
+                btn.style.display = 'none';
+            }
+        }
+
+        function deletarSelecionadas() {
+            const selecionadas = document.querySelectorAll('#tabelaVendas tbody .btn-checkbox-venda.selecionada');
+            if (selecionadas.length === 0) return;
+            
+            if (confirm(`Tem certeza que deseja apagar ${selecionadas.length} venda(s)?`)) {
+                selecionadas.forEach(btn => {
+                    btn.closest('tr').remove();
+                });
+                atualizarBtnDeletar();
+                calcular();
+            }
+        }
+
+        function travarVenda(tr) {
+            tr.querySelectorAll('input:not(.checkbox-cliente), select').forEach(inp => {
+                inp.disabled = true;
+                inp.style.opacity = '0.6';
+                inp.style.cursor = 'not-allowed';
+                inp.style.background = '#f0f0f0';
+            });
+            // Mostrar botão de editar
+            const btnEdit = tr.querySelector('.btn-edit');
+            if (btnEdit) {
+                btnEdit.style.display = 'inline-block';
+            }
+        }
+
+        function editarVenda(btn) {
+            const tr = btn.closest('tr');
+            tr.querySelectorAll('input:not(.checkbox-cliente), select').forEach(inp => {
+                inp.disabled = false;
+                inp.style.opacity = '1';
+                inp.style.cursor = 'auto';
+                inp.style.background = 'white';
+            });
+            // Esconder botão de editar
+            btn.style.display = 'none';
+            // Focar no primeiro input
+            const primeiroInput = tr.querySelector('input.cliente');
+            if (primeiroInput) primeiroInput.focus();
+        }
+
+        // Gastos
+        function adicionarGasto() {
+            const desc = document.getElementById('descGasto').value.trim();
+            const valor = parseFloat(document.getElementById('valorGasto').value) || 0;
+
+            if (!desc) {
+                alert('❌ Preencha a descrição do gasto!');
+                return;
+            }
+
+            const tbody = document.querySelector('#tabelaGastos tbody');
+            const tr = document.createElement('tr');
+
+            tr.innerHTML = `
+                <td><input type="text" class="descricao" value="${desc}" readonly></td>
+                <td class="texto-centro"><input type="number" class="valor" value="${valor}" readonly></td>
+                <td class="texto-centro"><input type="color" class="cor" value="#ff7a00" readonly style="width: 50px; height: 40px; border: 2px solid #ddd; cursor: not-allowed;"></td>
+                <td class="texto-centro">
+                    <button class="btn-danger" onclick="apagarGasto(this)">🗑️</button>
+                </td>
+            `;
+
+            tr.querySelectorAll('input').forEach(inp => {
+                inp.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !inp.disabled) {
+                        e.preventDefault();
+                        const novoDesc = tr.querySelector('.descricao').value;
+                        const novoValor = tr.querySelector('.valor').value;
+                        if (novoDesc && novoValor) {
+                            travarGasto(tr);
+                            adicionarGastoVazio();
+                        }
+                    }
+                });
+            });
+
+            tbody.appendChild(tr);
+            document.getElementById('descGasto').value = '';
+            document.getElementById('valorGasto').value = '';
+            calcular();
+        }
+
+        function apagarGasto(btn) {
+            btn.closest('tr').remove();
+            calcular();
+        }
+
+        function travarGasto(tr) {
+            tr.querySelectorAll('input').forEach(inp => {
+                inp.disabled = true;
+                inp.style.opacity = '0.6';
+                inp.style.cursor = 'not-allowed';
+                inp.style.background = '#f0f0f0';
+            });
+        }
+
+        function adicionarGastoVazio() {
+            const tbody = document.querySelector('#tabelaGastos tbody');
+            const tr = document.createElement('tr');
+
+            tr.innerHTML = `
+                <td><input type="text" class="descricao" placeholder="Descrição do gasto"></td>
+                <td class="texto-centro"><input type="number" class="valor" placeholder="0,00" step="0.01"></td>
+                <td class="texto-centro"><input type="color" class="cor" value="#ff7a00" style="width: 50px; height: 40px; border: 2px solid #ddd; cursor: pointer;"></td>
+                <td class="texto-centro">
+                    <button class="btn-danger" onclick="apagarGasto(this)">🗑️</button>
+                </td>
+            `;
+
+            tr.querySelectorAll('input').forEach(inp => {
+                inp.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !inp.disabled) {
+                        e.preventDefault();
+                        const novoDesc = tr.querySelector('.descricao').value.trim();
+                        const novoValor = tr.querySelector('.valor').value;
+                        if (novoDesc && novoValor) {
+                            travarGasto(tr);
+                            calcular();
+                            adicionarGastoVazio();
+                        }
+                    }
+                });
+            });
+
+            tbody.appendChild(tr);
+            tr.querySelector('.descricao').focus();
+        }
+
+        // Cálculo Principal
+        function calcular() {
+            let totalGasQtd = 0, totalAguaQtd = 0, totalReguladorQtd = 0, totalMangueiraQtd = 0;
+            let totalDinheiro = 0, totalPix = 0, totalCartao = 0, totalFiado = 0;
+
+            // Vendas
+            document.querySelectorAll('#tabelaVendas tbody tr').forEach(tr => {
+                const produto = tr.querySelector('.produto').value;
+                const quantidade = parseFloat(tr.querySelector('.quantidade').value) || 0;
+                const pagamento = tr.querySelector('.pagamento').value;
+                const valor = parseFloat(tr.querySelector('.valor').value) || 0;
+
+                if (produto === 'gas') totalGasQtd += quantidade;
+                if (produto === 'agua') totalAguaQtd += quantidade;
+                if (produto === 'regulador') totalReguladorQtd += quantidade;
+                if (produto === 'mangueira') totalMangueiraQtd += quantidade;
+
+                if (pagamento === 'dinheiro') totalDinheiro += valor;
+                if (pagamento === 'pix') totalPix += valor;
+                if (pagamento === 'cartao') totalCartao += valor;
+                if (pagamento === 'fiado') totalFiado += valor;
+            });
+
+            // Gastos
+            let totalGastos = 0;
+            document.querySelectorAll('#tabelaGastos tbody tr').forEach(tr => {
+                const valor = parseFloat(tr.querySelector('.valor').value) || 0;
+                totalGastos += valor;
+            });
+
+            // Custos de produtos
+            const custoGas = parseFloat(document.getElementById('custoGas').value) || 0;
+            const custoAgua = parseFloat(document.getElementById('custoAgua').value) || 0;
+            const custoRegulador = parseFloat(document.getElementById('custoRegulador').value) || 0;
+            const custoMangueira = parseFloat(document.getElementById('custoMangueira').value) || 0;
+            const custoProdutos = (totalGasQtd * custoGas) + (totalAguaQtd * custoAgua) + (totalReguladorQtd * custoRegulador) + (totalMangueiraQtd * custoMangueira);
+
+            // Total de vendas (sem fiado)
+            const totalVendas = totalDinheiro + totalPix + totalCartao;
+
+            // Lucro real
+            const lucroReal = totalVendas - custoProdutos - totalGastos;
+
+            // Atualizar interface
+            document.getElementById('totalGasQtd').textContent = totalGasQtd;
+            document.getElementById('totalAguaQtd').textContent = totalAguaQtd;
+            document.getElementById('totalReguladorQtd').textContent = totalReguladorQtd;
+            document.getElementById('totalMangueiraQtd').textContent = totalMangueiraQtd;
+            document.getElementById('totalDinheiro').textContent = totalDinheiro.toFixed(2).replace('.', ',');
+            document.getElementById('totalPix').textContent = totalPix.toFixed(2).replace('.', ',');
+            document.getElementById('totalCartao').textContent = totalCartao.toFixed(2).replace('.', ',');
+            document.getElementById('totalFiado').textContent = totalFiado.toFixed(2).replace('.', ',');
+            document.getElementById('totalVendas').textContent = totalVendas.toFixed(2).replace('.', ',');
+            document.getElementById('totalGastos').textContent = totalGastos.toFixed(2).replace('.', ',');
+            document.getElementById('custoProdutos').textContent = custoProdutos.toFixed(2).replace('.', ',');
+            document.getElementById('lucroReal').textContent = `R$ ${lucroReal.toFixed(2).replace('.', ',')}`;
+
+            // Mudar cor do lucro
+            const lucroElement = document.getElementById('lucroReal');
+            if (lucroReal < 0) {
+                lucroElement.style.color = '#d32f2f';
+                lucroElement.parentElement.style.background = '#ffebee';
+                lucroElement.parentElement.style.borderLeftColor = '#d32f2f';
+            } else {
+                lucroElement.style.color = '#4caf50';
+                lucroElement.parentElement.style.background = '#fff9e6';
+                lucroElement.parentElement.style.borderLeftColor = '#4caf50';
+            }
+
+            // Salvar dados
+            salvarDados({
+                vendas: obterVendas(),
+                gastos: obterGastos(),
+                anotacoes: document.getElementById('anotacoes').value,
+                custoGas: document.getElementById('custoGas').value,
+                custoAgua: document.getElementById('custoAgua').value,
+                custoRegulador: document.getElementById('custoRegulador').value,
+                custoMangueira: document.getElementById('custoMangueira').value
+            });
+        }
+
+        function obterVendas() {
+            const vendas = [];
+            document.querySelectorAll('#tabelaVendas tbody tr').forEach(tr => {
+                vendas.push({
+                    hora: tr.cells[2].textContent,
+                    cliente: tr.querySelector('.cliente').value,
+                    observacao: tr.querySelector('.observacao').value,
+                    produto: tr.querySelector('.produto').value,
+                    quantidade: tr.querySelector('.quantidade').value,
+                    pagamento: tr.querySelector('.pagamento').value,
+                    valor: tr.querySelector('.valor').value,
+                    entregador: tr.querySelector('.entregador').value,
+                    especial: tr.querySelector('.checkbox-cliente').checked
+                });
+            });
+            return vendas;
+        }
+
+        function obterGastos() {
+            const gastos = [];
+            document.querySelectorAll('#tabelaGastos tbody tr').forEach(tr => {
+                gastos.push({
+                    descricao: tr.querySelector('.descricao').value,
+                    valor: tr.querySelector('.valor').value,
+                    cor: tr.querySelector('.cor').value
+                });
+            });
+            return gastos;
+        }
+
+        function salvarDados(dados) {
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            const storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+            storage[hoje] = dados;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+        }
+
+        // Backup e Restaurar
+        function salvarBackup() {
+            const dados = localStorage.getItem(STORAGE_KEY);
+            const blob = new Blob([dados || '{}'], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_vendas_${new Date().getTime()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function restaurarBackup(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+                    alert('✅ Backup restaurado com sucesso!');
+                    location.reload();
+                } catch (err) {
+                    alert('❌ Arquivo inválido!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // PDF
+        function gerarPDFDiario() {
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            const dados = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')[hoje] || {};
+
+            const html = `
+                <div style="font-family: Arial; padding: 20px;">
+                    <h1 style="text-align: center; color: #ff7a00; border-bottom: 3px solid #ff7a00; padding-bottom: 10px;">
+                        RELATÓRIO DIÁRIO - ALEMÃO GÁS
+                    </h1>
+                    <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                        Data: ${hoje} | Gerado em: ${new Date().toLocaleString('pt-BR')}
+                    </p>
+
+                    <h2 style="color: #333; border-bottom: 2px solid #ddd; padding-bottom: 8px;">VENDAS DO DIA</h2>
+                    ${dados.vendas ? `
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                            <tr style="background: #f5f5f5;">
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Hora</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Cliente</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Observação</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Produto</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Qtd</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Forma Pag.</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: right;">Valor</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Entregador</th>
+                            </tr>
+                            ${dados.vendas.map(v => `
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;">${v.hora}</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;">${v.cliente}</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;">${v.observacao}</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${v.produto === 'gas' ? '⛽ Gás' : v.produto === 'agua' ? '💧 Água' : v.produto === 'regulador' ? '🔧 Regulador' : '🔗 Mangueira'}</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${v.quantidade}</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
+                                        ${v.pagamento === 'dinheiro' ? '💵 Dinheiro' : v.pagamento === 'pix' ? '📱 Pix' : v.pagamento === 'cartao' ? '💳 Cartão' : '❌ Fiado'}
+                                    </td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">R$ ${parseFloat(v.valor).toFixed(2).replace('.', ',')}</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;">${v.entregador}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    ` : '<p>Nenhuma venda registrada</p>'}
+
+                    <h2 style="color: #333; border-bottom: 2px solid #ddd; padding-bottom: 8px;">GASTOS DO DIA</h2>
+                    ${dados.gastos && dados.gastos.length > 0 ? `
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                            <tr style="background: #f5f5f5;">
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Descrição</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: right;">Valor</th>
+                            </tr>
+                            ${dados.gastos.map(g => `
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;">${g.descricao}</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">R$ ${parseFloat(g.valor).toFixed(2).replace('.', ',')}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    ` : '<p>Nenhum gasto registrado</p>'}
+
+                    ${dados.anotacoes ? `
+                        <h2 style="color: #333; border-bottom: 2px solid #ddd; padding-bottom: 8px;">ANOTAÇÕES</h2>
+                        <p style="white-space: pre-wrap; color: #666;">${dados.anotacoes}</p>
+                    ` : ''}
+
+                    <p style="margin-top: 40px; text-align: center; color: #999; font-size: 12px; border-top: 1px solid #ddd; padding-top: 20px;">
+                        Relatório gerado automaticamente pelo Sistema de Vendas - Alemão Gás
+                    </p>
+                </div>
+            `;
+
+            const element = document.createElement('div');
+            element.innerHTML = html;
+
+            const opt = {
+                margin: 10,
+                filename: `relatorio_diario_${new Date().getTime()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function gerarPDFMensal() {
+            const storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+            const mesAtual = new Date().toLocaleDateString('pt-BR').substring(3);
+
+            let vendasMes = [];
+            let totalMes = 0;
+            let totalFiadoMes = 0;
+
+            for (const [data, dados] of Object.entries(storage)) {
+                if (data.substring(3) === mesAtual && dados.vendas) {
+                    vendasMes.push(...dados.vendas.map(v => ({ ...v, data })));
+                    dados.vendas.forEach(v => {
+                        if (v.pagamento !== 'fiado') {
+                            totalMes += parseFloat(v.valor) || 0;
+                        }
+                        if (v.pagamento === 'fiado') {
+                            totalFiadoMes += parseFloat(v.valor) || 0;
+                        }
+                    });
+                }
+            }
+
+            const html = `
+                <div style="font-family: Arial; padding: 20px;">
+                    <h1 style="text-align: center; color: #ff7a00; border-bottom: 3px solid #ff7a00; padding-bottom: 10px;">
+                        RELATÓRIO MENSAL - ALEMÃO GÁS
+                    </h1>
+                    <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                        Mês: ${mesAtual} | Gerado em: ${new Date().toLocaleString('pt-BR')}
+                    </p>
+
+                    <h2 style="color: #333; border-bottom: 2px solid #ddd; padding-bottom: 8px;">RESUMO DO MÊS</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                        <tr style="background: #f5f5f5;">
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Total Vendido (sem fiado)</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd; text-align: right; font-weight: bold;">R$ ${totalMes.toFixed(2).replace('.', ',')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Total Fiado</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd; text-align: right; background: #fff3e0;">R$ ${totalFiadoMes.toFixed(2).replace('.', ',')}</td>
+                        </tr>
+                    </table>
+
+                    <h2 style="color: #333; border-bottom: 2px solid #ddd; padding-bottom: 8px;">DETALHES DAS VENDAS</h2>
+                    ${vendasMes.length > 0 ? `
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px;">
+                            <tr style="background: #f5f5f5;">
+                                <th style="padding: 6px; border: 1px solid #ddd; text-align: left;">Data</th>
+                                <th style="padding: 6px; border: 1px solid #ddd; text-align: left;">Cliente</th>
+                                <th style="padding: 6px; border: 1px solid #ddd; text-align: left;">Observação</th>
+                                <th style="padding: 6px; border: 1px solid #ddd; text-align: center;">Produto</th>
+                                <th style="padding: 6px; border: 1px solid #ddd; text-align: center;">Qtd</th>
+                                <th style="padding: 6px; border: 1px solid #ddd; text-align: center;">Pagamento</th>
+                                <th style="padding: 6px; border: 1px solid #ddd; text-align: right;">Valor</th>
+                                <th style="padding: 6px; border: 1px solid #ddd; text-align: left;">Entregador</th>
+                            </tr>
+                            ${vendasMes.map(v => `
+                                <tr>
+                                    <td style="padding: 6px; border: 1px solid #ddd;">${v.data}</td>
+                                    <td style="padding: 6px; border: 1px solid #ddd;">${v.cliente}</td>
+                                    <td style="padding: 6px; border: 1px solid #ddd;">${v.observacao}</td>
+                                    <td style="padding: 6px; border: 1px solid #ddd; text-align: center;">${v.produto === 'gas' ? '⛽ Gás' : v.produto === 'agua' ? '💧 Água' : v.produto === 'regulador' ? '🔧 Regulador' : '🔗 Mangueira'}</td>
+                                    <td style="padding: 6px; border: 1px solid #ddd; text-align: center;">${v.quantidade}</td>
+                                    <td style="padding: 6px; border: 1px solid #ddd; text-align: center;">
+                                        ${v.pagamento === 'dinheiro' ? '💵 Dinheiro' : v.pagamento === 'pix' ? '📱 Pix' : v.pagamento === 'cartao' ? '💳 Cartão' : '❌ Fiado'}
+                                    </td>
+                                    <td style="padding: 6px; border: 1px solid #ddd; text-align: right;">R$ ${parseFloat(v.valor).toFixed(2).replace('.', ',')}</td>
+                                    <td style="padding: 6px; border: 1px solid #ddd;">${v.entregador}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    ` : '<p>Nenhuma venda no mês</p>'}
+
+                    <p style="margin-top: 40px; text-align: center; color: #999; font-size: 12px; border-top: 1px solid #ddd; padding-top: 20px;">
+                        Relatório gerado automaticamente pelo Sistema de Vendas - Alemão Gás
+                    </p>
+                </div>
+            `;
+
+            const element = document.createElement('div');
+            element.innerHTML = html;
+
+            const opt = {
+                margin: 10,
+                filename: `relatorio_mensal_${new Date().getTime()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // Carregar dados ao iniciar
+        window.addEventListener('load', () => {
+            verificarLogin();
+            carregarListaEntregadores();
+            atualizarSelectEntregadores();
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            const storage = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+            const dadosHoje = storage[hoje] || {};
+
+            if (dadosHoje.custoGas) document.getElementById('custoGas').value = dadosHoje.custoGas;
+            if (dadosHoje.custoAgua) document.getElementById('custoAgua').value = dadosHoje.custoAgua;
+            if (dadosHoje.custoRegulador) document.getElementById('custoRegulador').value = dadosHoje.custoRegulador;
+            if (dadosHoje.custoMangueira) document.getElementById('custoMangueira').value = dadosHoje.custoMangueira;
+            if (dadosHoje.anotacoes) document.getElementById('anotacoes').value = dadosHoje.anotacoes;
+
+            if (dadosHoje.vendas) {
+                dadosHoje.vendas.forEach(v => {
+                    const tbody = document.querySelector('#tabelaVendas tbody');
+                    const tr = document.createElement('tr');
+                    if (v.especial) tr.classList.add('cliente-especial');
+                    let corPagamento = '';
+                    if (v.pagamento === 'dinheiro') corPagamento = 'pag-dinheiro';
+                    if (v.pagamento === 'pix') corPagamento = 'pag-pix';
+                    if (v.pagamento === 'cartao') corPagamento = 'pag-cartao';
+                    if (v.pagamento === 'fiado') corPagamento = 'pag-fiado';
+
+                    tr.innerHTML = `
+                        <td class="texto-centro"><button class="btn-checkbox-venda" onclick="selecionarVenda(this)"></button></td>
+                        <td class="texto-centro">${v.hora}</td>
+                        <td><input type="text" class="cliente" value="${v.cliente}"></td>
+                        <td><input type="text" class="observacao" value="${v.observacao}"></td>
+                        <td style="padding: 8px;">
+                            <select class="produto">
+                                <option value="gas" ${v.produto === 'gas' ? 'selected' : ''}>⛽ Gás</option>
+                                <option value="agua" ${v.produto === 'agua' ? 'selected' : ''}>💧 Água</option>
+                                <option value="regulador" ${v.produto === 'regulador' ? 'selected' : ''}>🔧 Regulador</option>
+                                <option value="mangueira" ${v.produto === 'mangueira' ? 'selected' : ''}>🔗 Mangueira</option>
+                            </select>
+                        </td>
+                        <td class="texto-centro"><input type="number" class="quantidade" value="${v.quantidade}"></td>
+                        <td style="padding: 8px;">
+                            <select class="pagamento ${corPagamento}">
+                                <option value="dinheiro" ${v.pagamento === 'dinheiro' ? 'selected' : ''}>💵 Dinheiro</option>
+                                <option value="pix" ${v.pagamento === 'pix' ? 'selected' : ''}>📱 Pix</option>
+                                <option value="cartao" ${v.pagamento === 'cartao' ? 'selected' : ''}>💳 Cartão</option>
+                                <option value="fiado" ${v.pagamento === 'fiado' ? 'selected' : ''}>❌ Fiado</option>
+                            </select>
+                        </td>
+                        <td class="texto-centro"><input type="number" class="valor" value="${v.valor}" readonly></td>
+                        <td style="padding: 8px;">
+                            <select class="entregador select-entregador">
+                                <option value="">Selecione...</option>
+                            </select>
+                        </td>
+                        <td class="texto-centro"><input type="checkbox" class="checkbox-cliente" onchange="marcarClienteEspecial(this)" ${v.especial ? 'checked' : ''} title="Marcar como cliente especial"></td>
+                        <td class="texto-centro">
+                            <button class="btn-edit" onclick="editarVenda(this)" style="display: none;">✏️</button>
+                        </td>
+                    `;
+                    
+                    // Preencher select de entregadores
+                    const selectEntregador = tr.querySelector('.entregador');
+                    const entregadores = JSON.parse(localStorage.getItem(ENTREGADORES_KEY) || '[]');
+                    entregadores.forEach(nome => {
+                        const option = document.createElement('option');
+                        option.value = nome;
+                        option.textContent = nome;
+                        selectEntregador.appendChild(option);
+                    });
+                    selectEntregador.value = v.entregador;
+                    
+                    tr.querySelectorAll('input, select').forEach(inp => {
+                        inp.addEventListener('input', calcular);
+                        inp.addEventListener('change', calcular);
+                    });
+                    tbody.appendChild(tr);
+                });
+            }
+
+            if (dadosHoje.gastos) {
+                dadosHoje.gastos.forEach(g => {
+                    const tbody = document.querySelector('#tabelaGastos tbody');
+                    const tr = document.createElement('tr');
+                    const cor = g.cor || '#ff7a00';
+                    tr.innerHTML = `
+                        <td><input type="text" class="descricao" value="${g.descricao}" readonly></td>
+                        <td class="texto-centro"><input type="number" class="valor" value="${parseFloat(g.valor).toFixed(2)}" readonly></td>
+                        <td class="texto-centro"><input type="color" class="cor" value="${cor}" readonly style="width: 50px; height: 40px; border: 2px solid #ddd; cursor: not-allowed;"></td>
+                        <td class="texto-centro"><button class="btn-danger" onclick="apagarGasto(this)">🗑️</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            calcular();
+        });
+
+        // Auto-save
+        document.addEventListener('input', (e) => {
+            if (e.target === document.getElementById('anotacoes')) {
+                calcular();
+            }
+        });
+    </script>
+</body>
+</html>
+
