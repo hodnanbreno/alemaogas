@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug Despesas</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        button { padding: 10px 20px; margin: 10px 5px 0 0; background: #ff6b35; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #e55100; }
+        pre { background: #f0f0f0; padding: 15px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; }
+        h2 { color: #333; border-bottom: 2px solid #ff6b35; padding-bottom: 10px; }
+        .output { margin-top: 15px; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #ff6b35; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug Despesas - Sistema Alemão Gás</h1>
+        
+        <h2>📊 Status Atual</h2>
+        <div id="status"></div>
+        
+        <h2>🧪 Testes Rápidos</h2>
+        <button onclick="testarLocalStorage()">1. Verificar LocalStorage</button>
+        <button onclick="testarFiltroData()">2. Testar Filtro de Data</button>
+        <button onclick="testarCalculoCompleto()">3. Testar Cálculo Completo</button>
+        <button onclick="limparTudo()">4. Limpar Tudo</button>
+        
+        <div class="output" id="output"></div>
+    </div>
+
+    <script>
+        function formatarData(date) {
+            const dia = String(date.getDate()).padStart(2, '0');
+            const mes = String(date.getMonth() + 1).padStart(2, '0');
+            const ano = date.getFullYear();
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function statusInicial() {
+            const despesas = JSON.parse(localStorage.getItem('despesas') || '[]');
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            
+            let html = `
+                <table>
+                    <tr>
+                        <th>Item</th>
+                        <th>Valor</th>
+                    </tr>
+                    <tr>
+                        <td>Data de hoje</td>
+                        <td><strong>${hoje}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Total de despesas no localStorage</td>
+                        <td><strong>${despesas.length}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Soma de todas as despesas</td>
+                        <td><strong>R$ ${despesas.reduce((sum, d) => sum + (parseFloat(d.valor) || 0), 0).toFixed(2).replace('.', ',')}</strong></td>
+                    </tr>
+                </table>
+            `;
+            
+            if (despesas.length > 0) {
+                html += '<h3>Despesas Salvas:</h3><table>';
+                html += '<tr><th>Descrição</th><th>Valor</th><th>Data</th><th>Data Extraída</th></tr>';
+                despesas.forEach(d => {
+                    const dataDespesa = d.data.split(' ')[0];
+                    html += `
+                        <tr>
+                            <td>${d.descricao}</td>
+                            <td>R$ ${parseFloat(d.valor).toFixed(2).replace('.', ',')}</td>
+                            <td>${d.data}</td>
+                            <td>${dataDespesa} ${dataDespesa === hoje ? '<span class="success">✓ HOJE</span>' : '<span class="error">✗ OUTRO DIA</span>'}</td>
+                        </tr>
+                    `;
+                });
+                html += '</table>';
+            } else {
+                html += '<p class="error">⚠️ Nenhuma despesa no localStorage</p>';
+            }
+            
+            document.getElementById('status').innerHTML = html;
+        }
+
+        function testarLocalStorage() {
+            const despesas = JSON.parse(localStorage.getItem('despesas') || '[]');
+            let output = '<h3>📁 Dados no LocalStorage</h3>\n';
+            output += JSON.stringify(despesas, null, 2);
+            document.getElementById('output').innerHTML = '<pre>' + output + '</pre>';
+        }
+
+        function testarFiltroData() {
+            const despesas = JSON.parse(localStorage.getItem('despesas') || '[]');
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            
+            let output = `<h3>📅 Filtro de Data</h3>\n`;
+            output += `Data esperada: <strong>${hoje}</strong>\n\n`;
+            
+            let totalHoje = 0;
+            let totalOutroDia = 0;
+            
+            despesas.forEach((d, i) => {
+                const dataDespesa = d.data.split(',')[0]; // IMPORTANTE: usar split(',') não split(' ')
+                const isHoje = dataDespesa === hoje;
+                const valor = parseFloat(d.valor) || 0;
+                
+                output += `Despesa ${i + 1}:\n`;
+                output += `  Descrição: ${d.descricao}\n`;
+                output += `  Data completa: ${d.data}\n`;
+                output += `  Data extraída: ${dataDespesa}\n`;
+                output += `  Corresponde a hoje? ${isHoje ? '✓ SIM' : '✗ NÃO'}\n`;
+                output += `  Valor: R$ ${valor.toFixed(2).replace('.', ',')}\n\n`;
+                
+                if (isHoje) {
+                    totalHoje += valor;
+                } else {
+                    totalOutroDia += valor;
+                }
+            });
+            
+            output += `\n<strong>RESUMO:</strong>\n`;
+            output += `Total de despesas de HOJE: R$ ${totalHoje.toFixed(2).replace('.', ',')}\n`;
+            output += `Total de despesas de OUTRO DIA: R$ ${totalOutroDia.toFixed(2).replace('.', ',')}\n`;
+            output += `Total GERAL: R$ ${(totalHoje + totalOutroDia).toFixed(2).replace('.', ',')}\n`;
+            
+            document.getElementById('output').innerHTML = '<pre>' + output + '</pre>';
+        }
+
+        function testarCalculoCompleto() {
+            const vendas = JSON.parse(localStorage.getItem('vendas') || '[]');
+            const custos = JSON.parse(localStorage.getItem('custos') || '{}');
+            const despesas = JSON.parse(localStorage.getItem('despesas') || '[]');
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            
+            let output = '<h3>🧮 Cálculo Completo do Dashboard</h3>\n\n';
+            
+            // Vendas
+            let totalDinheiro = 0;
+            let totalPix = 0;
+            let totalCartao = 0;
+            
+            vendas.forEach(v => {
+                v.produtos.forEach(p => {
+                    const valor = p.valor * p.quantidade;
+                    if (p.pagamento === 'dinheiro') totalDinheiro += valor;
+                    if (p.pagamento === 'pix') totalPix += valor;
+                    if (p.pagamento === 'cartao') totalCartao += valor;
+                });
+            });
+            
+            output += `ENTRADAS:\n`;
+            output += `  Dinheiro: R$ ${totalDinheiro.toFixed(2).replace('.', ',')}\n`;
+            output += `  PIX: R$ ${totalPix.toFixed(2).replace('.', ',')}\n`;
+            output += `  Cartão: R$ ${totalCartao.toFixed(2).replace('.', ',')}\n`;
+            output += `  TOTAL: R$ ${(totalDinheiro + totalPix + totalCartao).toFixed(2).replace('.', ',')}\n\n`;
+            
+            // Custos
+            output += `CUSTOS DOS PRODUTOS:\n`;
+            output += `  Gás: R$ ${(parseFloat(custos.gas) || 0).toFixed(2).replace('.', ',')}\n`;
+            output += `  Água: R$ ${(parseFloat(custos.agua) || 0).toFixed(2).replace('.', ',')}\n`;
+            output += `  Regulador: R$ ${(parseFloat(custos.regulador) || 0).toFixed(2).replace('.', ',')}\n`;
+            output += `  Mangueira: R$ ${(parseFloat(custos.mangueira) || 0).toFixed(2).replace('.', ',')}\n\n`;
+            
+            // Despesas - USAR split(',')
+            let totalDespesas = 0;
+            let despesasHoje = 0;
+            despesas.forEach(d => {
+                if (d.data) {
+                    const dataDespesa = d.data.split(',')[0]; // IMPORTANTE: usar split(',')
+                    if (dataDespesa === hoje) {
+                        despesasHoje += parseFloat(d.valor) || 0;
+                    }
+                    totalDespesas += parseFloat(d.valor) || 0;
+                }
+            });
+            
+            output += `DESPESAS DE HOJE:\n`;
+            output += `  Data filtro: ${hoje}\n`;
+            output += `  Total de HOJE: R$ ${despesasHoje.toFixed(2).replace('.', ',')}\n`;
+            output += `  Total GERAL (todos os dias): R$ ${totalDespesas.toFixed(2).replace('.', ',')}\n`;
+            output += `  Quantidade hoje: ${despesas.filter(d => d.data.split(',')[0] === hoje).length}\n\n`;
+            
+            output += `RESULTADO:\n`;
+            output += `  Entradas: R$ ${(totalDinheiro + totalPix + totalCartao).toFixed(2).replace('.', ',')}\n`;
+            output += `  Despesas: R$ ${despesasHoje.toFixed(2).replace('.', ',')}\n`;
+            output += `  Lucro: R$ ${((totalDinheiro + totalPix + totalCartao) - despesasHoje).toFixed(2).replace('.', ',')}\n`;
+            
+            document.getElementById('output').innerHTML = '<pre>' + output + '</pre>';
+        }
+
+        function limparTudo() {
+            if (confirm('Tem certeza que deseja limpar TODAS as despesas?')) {
+                localStorage.removeItem('despesas');
+                alert('✓ Despesas limpas!');
+                statusInicial();
+                document.getElementById('output').innerHTML = '';
+            }
+        }
+
+        // Carregar ao abrir
+        statusInicial();
+    </script>
+</body>
+</html>

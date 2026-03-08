@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Despesas</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            font-size: 14px;
+            cursor: pointer;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #e55100;
+        }
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        h2 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste de Despesas</h1>
+        
+        <h2>Ações</h2>
+        <button onclick="adicionarDespesaTeste()">➕ Adicionar Despesa Teste</button>
+        <button onclick="listarDespesasTeste()">📋 Listar Despesas</button>
+        <button onclick="limparLocalStorage()">🗑️ Limpar Tudo</button>
+        <button onclick="testarCalculoDia()">🧮 Testar Cálculo do Dia</button>
+        
+        <h2>LocalStorage Despesas</h2>
+        <pre id="output"></pre>
+    </div>
+
+    <script>
+        function adicionarDespesaTeste() {
+            const despesas = JSON.parse(localStorage.getItem('despesas') || '[]');
+            
+            const novaDespesa = {
+                descricao: 'Teste Diária',
+                valor: 50.00,  // Número puro
+                categoria: 'diaria',
+                data: new Date().toLocaleString('pt-BR')
+            };
+            
+            console.log('Adicionando despesa:', novaDespesa);
+            despesas.push(novaDespesa);
+            
+            localStorage.setItem('despesas', JSON.stringify(despesas));
+            alert('✅ Despesa adicionada: R$ 50.00');
+            listarDespesasTeste();
+        }
+
+        function listarDespesasTeste() {
+            const despesas = JSON.parse(localStorage.getItem('despesas') || '[]');
+            const output = document.getElementById('output');
+            
+            let html = '<strong>Total de despesas:</strong> ' + despesas.length + '\n\n';
+            html += JSON.stringify(despesas, null, 2);
+            
+            // Calcular total
+            let total = 0;
+            despesas.forEach(d => {
+                let valor = d.valor;
+                if (typeof valor === 'string') {
+                    valor = parseFloat(valor.replace(',', '.'));
+                }
+                total += (isNaN(valor) ? 0 : valor);
+            });
+            
+            html += '\n\n<strong>Total calculado:</strong> R$ ' + total.toFixed(2).replace('.', ',');
+            
+            output.innerHTML = html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function limparLocalStorage() {
+            localStorage.removeItem('despesas');
+            alert('✅ Despesas limpas');
+            document.getElementById('output').innerHTML = '';
+        }
+
+        function testarCalculoDia() {
+            const despesas = JSON.parse(localStorage.getItem('despesas') || '[]');
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            
+            let html = '<strong>Data hoje:</strong> ' + hoje + '\n\n';
+            
+            let despesasTotal = 0;
+            despesas.forEach(d => {
+                if (d.data) {
+                    const dataDespesa = d.data.includes(' ') ? d.data.split(' ')[0] : d.data;
+                    let valor = d.valor;
+                    if (typeof valor === 'string') {
+                        valor = parseFloat(valor.replace(',', '.'));
+                    }
+                    valor = parseFloat(valor);
+                    
+                    html += 'Despesa: ' + d.descricao + '\n';
+                    html += '  Data salva: ' + d.data + '\n';
+                    html += '  Data extraída: ' + dataDespesa + '\n';
+                    html += '  Correspondência: ' + (dataDespesa === hoje ? '✅ SIM' : '❌ NÃO') + '\n';
+                    html += '  Valor: R$ ' + valor.toFixed(2).replace('.', ',') + '\n\n';
+                    
+                    if (dataDespesa === hoje) {
+                        despesasTotal += valor;
+                    }
+                }
+            });
+            
+            html += '\n<strong>Total de despesas de HOJE:</strong> R$ ' + despesasTotal.toFixed(2).replace('.', ',');
+            
+            document.getElementById('output').innerHTML = html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // Carregar ao abrir
+        console.log('Página de teste carregada');
+        listarDespesasTeste();
+    </script>
+</body>
+</html>
