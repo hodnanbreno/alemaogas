@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alemão Gás - Sistema de Vendas</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        .vendas-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .venda-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        .venda-card.selecionada {
+            background: #e8f4f8;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        .venda-checkbox {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- TELA DE LOGIN -->
+    <div id="loginScreen" class="login-screen active">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="login-header">
+                    <h1>🛢️ Alemão Gás</h1>
+                    <p>Sistema de Vendas</p>
+                </div>
+                
+                <form id="loginForm" onsubmit="fazerLogin(event)">
+                    <div class="login-form-group">
+                        <label for="loginUser">Usuário</label>
+                        <input 
+                            type="text" 
+                            id="loginUser" 
+                            placeholder="Digite seu usuário" 
+                            required
+                            autofocus
+                        >
+                    </div>
+                    
+                    <div class="login-form-group">
+                        <label for="loginPassword">Senha</label>
+                        <input 
+                            type="password" 
+                            id="loginPassword" 
+                            placeholder="Digite sua senha" 
+                            required
+                        >
+                    </div>
+                    
+                    <div id="loginError" class="login-error" style="display: none;">
+                        ⚠️ Usuário ou senha incorretos!
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login">🔓 Entrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR NAVEGAÇÃO -->
+    <aside class="sidebar" id="sidebarContainer" style="display: none;">
+        <div class="sidebar-header">
+            <h1>🛢️ Alemão Gás</h1>
+
+
+            <button class="btn-logout" onclick="fazerLogout()" title="Sair do sistema">🚪 Logout</button>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="sidebar-item active" onclick="abrirSidebarItem('dashboard')">
+                <span class="icon">📊</span>
+                <span>Dashboard</span>
+            </button>
+            <button class="sidebar-item" onclick="abrirSidebarItem('vendas')">
+                <span class="icon">🛍️</span>
+                <span>Vendas</span>
+            </button>
+            <button class="sidebar-item" onclick="abrirSidebarItem('despesas')">
+                <span class="icon">💸</span>
+                <span>Despesas</span>
+            </button>
+            <button class="sidebar-item" onclick="abrirSidebarItem('fiados')">
+                <span class="icon">📋</span>
+                <span>Fiados</span>
+            </button>
+            <button class="sidebar-item" onclick="abrirSidebarItem('creditos')">
+                <span class="icon">💳</span>
+                <span>Créditos</span>
+            </button>
+            <button class="sidebar-item" onclick="abrirSidebarItem('entregadores')">
+                <span class="icon">🚚</span>
+                <span>Entregadores</span>
+            </button>
+            <button class="sidebar-item" onclick="abrirSidebarItem('configuracao')">
+                <span class="icon">⚙️</span>
+                <span>Configuração</span>
+            </button>
+        </nav>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content" id="mainContent" style="display: none;">
+        <!-- MODAL DASHBOARD -->
+        <div class="modal fullscreen" id="modalDashboard">
+            <div class="modal-header">
+                <h2>📊 Dashboard</h2>
+                <button class="btn-close" onclick="fecharModal('modalDashboard')">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Lucro Grande -->
+                <div class="card-destaque">
+                    <div class="card-destaque-content">
+                        <p class="card-destaque-label">💎 LUCRO DO DIA</p>
+                        <p id="lucroGrande" class="card-destaque-valor">R$ 0,00</p>
+                    </div>
+                </div>
+
+                <!-- Seção Pagamentos -->
+                <h3 class="section-title">💵 Formas de Pagamento</h3>
+                <div class="cards-grid">
+                    <div class="card card-dinheiro">
+                        <div class="card-icon">💰</div>
+                        <div class="card-label">Dinheiro</div>
+                        <div class="card-valor" id="dashMoney">R$ 0,00</div>
+                    </div>
+                    <div class="card card-pix">
+                        <div class="card-icon">📱</div>
+                        <div class="card-label">PIX</div>
+                        <div class="card-valor" id="dashPix">R$ 0,00</div>
+                    </div>
+                    <div class="card card-cartao">
+                        <div class="card-icon">💳</div>
+                        <div class="card-label">Cartão</div>
+                        <div class="card-valor" id="dashCard">R$ 0,00</div>
+                    </div>
+                    <div class="card card-fiado">
+                        <div class="card-icon">📋</div>
+                        <div class="card-label">Fiado</div>
+                        <div class="card-valor" id="dashFiado">R$ 0,00</div>
+                    </div>
+                </div>
+
+                <!-- Seção Produtos -->
+                <h3 class="section-title">📦 Produtos Vendidos</h3>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon">⛽</div>
+                        <div class="card-label">Gás</div>
+                        <div class="card-quantidade-grande" id="dashGasQtd">0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💧</div>
+                        <div class="card-label">Água</div>
+                        <div class="card-quantidade-grande" id="dashAguaQtd">0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">⚙️</div>
+                        <div class="card-label">Regulador</div>
+                        <div class="card-quantidade-grande" id="dashRegQtd">0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔗</div>
+                        <div class="card-label">Mangueira</div>
+                        <div class="card-quantidade-grande" id="dashManQtd">0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🛢️</div>
+                        <div class="card-label">Botija Completa</div>
+                        <div class="card-quantidade-grande" id="dashBotijaQtd">0</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🧴</div>
+                        <div class="card-label">Galão Completo</div>
+                        <div class="card-quantidade-grande" id="dashGalaoQtd">0</div>
+                    </div>
+                </div>
+
+                <!-- Seção Resumo -->
+                <h3 class="section-title">📊 Resumo Financeiro</h3>
+                <div class="cards-grid">
+                    <div class="card card-positivo">
+                        <div class="card-label">✅ VENDAS TOTAL</div>
+                        <div class="card-valor" id="dashEntradas">R$ 0,00</div>
+                    </div>
+                    <div class="card card-negativo">
+                        <div class="card-label">❌ Custo Produtos</div>
+                        <div class="card-valor" id="dashCustoProducts">R$ 0,00</div>
+                    </div>
+                    <div class="card card-negativo">
+                        <div class="card-label">❌ Despesas</div>
+                        <div class="card-valor" id="dashDespesas">R$ 0,00</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-label">💡 Margem</div>
+                        <div class="card-valor" id="dashMargem">0%</div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="atualizarDashboard()">🔄 Atualizar</button>
+                    <button class="btn btn-primary" onclick="gerarPDFDiario()">📅 PDF Diário</button>
+                    <button class="btn btn-primary" onclick="gerarPDFMensal()">📆 PDF Mensal</button>
+                    <button class="btn btn-secondary" onclick="fecharModal('modalDashboard')">← Voltar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL VENDAS -->
+        <div class="modal fullscreen" id="modalVendas">
+            <div class="modal-header">
+                <h2>🛍️ Registrar Venda</h2>
+                <button class="btn-close" onclick="fecharModal('modalVendas')">✕</button>
+            </div>
+            <div class="modal-body">
+                <h3 class="section-title">� Informações da Venda</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>Nome do Cliente</label>
+                        <input type="text" id="clienteNome" placeholder="Digite o nome">
+                    </div>
+                    <div class="form-group">
+                        <label>Entregador</label>
+                        <select id="entregador">
+                            <option value="">Sem entregador</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3 class="section-title">🏷️ Marcação da Venda</h3>
+                <div class="form-group">
+                    <label>Marcar como:</label>
+                    <select id="marcacaoVenda">
+                        <option value="">Sem marcação</option>
+                        <option value="importante">⭐ Importante</option>
+                        <option value="urgente">🔴 Urgente</option>
+                        <option value="pendente">⏳ Pendente</option>
+                        <option value="devolvido">🔄 Devolvido</option>
+                    </select>
+                </div>
+
+                <h3 class="section-title">📦 Produtos</h3>
+                
+                <!-- Produto 1 -->
+                <div style="background: linear-gradient(135deg, #fff5f0 0%, #f0f8ff 100%); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #ff6b35;">
+                    <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label style="font-weight: 700; font-size: 13px;">Produto 1</label>
+                            <select id="produto1">
+                                <option value="">Selecione</option>
+                                <option value="gas">⛽ Gás</option>
+                                <option value="agua">💧 Água</option>
+                                <option value="regulador">⚙️ Regulador</option>
+                                <option value="mangueira">〰️ Mangueira</option>
+                                <option value="botija">🟦 Botija Completa</option>
+                                <option value="galao">🧴 Galão Completo</option>
+                                <option value="pagamento_notas">💵 Pagamento de Notas</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="font-weight: 700; font-size: 13px;">Qtd</label>
+                            <input type="number" id="qtd1" min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label style="font-weight: 700; font-size: 13px;">Valor</label>
+                            <input type="text" id="valor1" placeholder="0,00" onchange="atualizarTotalVenda()">
+                        </div>
+                        <div class="form-group">
+                            <label style="font-weight: 700; font-size: 13px;">Pagamento</label>
+                            <select id="pagto1" onchange="atualizarTotalVenda()">
+                                <option value="">Selecione</option>
+                                <option value="dinheiro">💰 Dinheiro</option>
+                                <option value="pix">📱 PIX</option>
+                                <option value="cartao">💳 Cartão</option>
+                                <option value="fiado">📋 Fiado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Produto 2 -->
+                <div style="background: linear-gradient(135deg, #f0f8ff 0%, #fff5f0 100%); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 2px solid #0066ff;">
+                    <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+                        <div class="form-group">
+                            <label style="font-weight: 700; font-size: 13px;">Produto 2 (opcional)</label>
+                            <select id="produto2">
+                                <option value="">Não usar</option>
+                                <option value="gas">⛽ Gás</option>
+                                <option value="agua">💧 Água</option>
+                                <option value="regulador">⚙️ Regulador</option>
+                                <option value="mangueira">🪛 Mangueira</option>
+                                <option value="botija">�️ Botija Completa</option>
+                                <option value="galao">🧴 Galão Completo</option>
+                                <option value="pagamento_notas">💵 Pagamento de Notas</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="font-weight: 700; font-size: 13px;">Qtd</label>
+                            <input type="number" id="qtd2" min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label style="font-weight: 700; font-size: 13px;">Valor</label>
+                            <input type="text" id="valor2" placeholder="0,00" onchange="atualizarTotalVenda()">
+                        </div>
+                        <div class="form-group">
+                            <label style="font-weight: 700; font-size: 13px;">Pagamento</label>
+                            <select id="pagto2" onchange="atualizarTotalVenda()">
+                                <option value="">Não usar</option>
+                                <option value="dinheiro">💰 Dinheiro</option>
+                                <option value="pix">📱 PIX</option>
+                                <option value="cartao">💳 Cartão</option>
+                                <option value="fiado">📋 Fiado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title">📝 Observações</h3>
+                <div class="form-group">
+                    <textarea id="observacao" placeholder="Adicione observações..." style="min-height: 50px;"></textarea>
+                </div>
+
+                <div class="info-box">
+                    <p>Total da Venda: <strong id="totalVendaExibido">R$ 0,00</strong></p>
+                    <p id="alertaPagamento" style="color: #e74c3c; margin-top: 10px; display: none;">⚠️ Preencha todos os campos obrigatórios!</p>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-success" onclick="finalizarVendaSimples()">✅ Finalizar Venda</button>
+                    <button class="btn btn-secondary" onclick="limparVendaSimples()">🗑️ Limpar</button>
+                    <button class="btn btn-secondary" onclick="fecharModal('modalVendas')">← Voltar</button>
+                </div>
+
+                <h3 class="section-title">📝 Vendas do Dia</h3>
+                
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <input type="text" id="buscaVendas" placeholder="🔍 Procurar por nome do cliente..." onkeyup="filtrarVendas(this.value)">
+                </div>
+
+                <!-- Controles de Seleção Múltipla -->
+                <div class="modal-actions" style="margin-bottom: 15px; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" id="btnSelecionarTodas" onclick="selecionarTodasVendas()" style="display: none;">✅ Selecionar Todas</button>
+                    <button class="btn btn-secondary" id="btnDesselecionar" onclick="desselecionarTodasVendas()" style="display: none;">⭕ Desselecionar Todas</button>
+                    <button class="btn btn-danger" id="btnApagarSelecionadas" onclick="apagarVendasSelecionadas()" style="display: none;">🗑️ Apagar Selecionadas</button>
+                    <span id="contadorSelecao" style="display: none; align-self: center; font-weight: 500; color: #e74c3c;">0 vendas selecionadas</span>
+                </div>
+                
+                <div id="listaVendas"></div>
+            </div>
+        </div>
+
+        <!-- MODAL DESPESAS -->
+        <div class="modal fullscreen" id="modalDespesas">
+            <div class="modal-header">
+                <h2>💸 Despesas do Dia</h2>
+                <button class="btn-close" onclick="fecharModal('modalDespesas')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <p>Total de despesas: <strong id="totalDespesasValor">R$ 0,00</strong></p>
+                    <p>Quantidade: <strong id="qtdDespesas">0</strong></p>
+                </div>
+
+                <h3 class="section-title">➕ Adicionar Despesa</h3>
+                <div class="form-group">
+                    <label>Descrição da Despesa</label>
+                    <input type="text" id="despesaDescricao" placeholder="Ex: Combustível, Manutenção...">
+                </div>
+
+                <div class="form-group">
+                    <label>Valor (R$)</label>
+                    <input type="text" id="despesaValor" placeholder="0,00">
+                </div>
+
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="despesaCategoria">
+                        <option value="">Selecione uma categoria</option>
+                        <option value="combustivel">⛽ Combustível</option>
+                        <option value="manutencao">🔧 Manutenção</option>
+                        <option value="salario">💼 Salário</option>
+                        <option value="aluguel">🏠 Aluguel</option>
+                        <option value="diaria">💵 Diária</option>
+                        <option value="alimentacao">🍔 Alimentação</option>
+                        <option value="escada">⬆️ Escada</option>
+                        <option value="outro">📌 Outro</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-success" onclick="adicionarDespesa()">➕ Adicionar Despesa</button>
+                    <button class="btn btn-secondary" onclick="fecharModal('modalDespesas')">← Voltar</button>
+                </div>
+
+                <h3 class="section-title">📝 Despesas Lançadas</h3>
+                <div id="listaDespesas"></div>
+            </div>
+        </div>
+
+        <!-- MODAL FIADOS -->
+        <div class="modal fullscreen" id="modalFiados">
+            <div class="modal-header">
+                <h2>📋 Fiados</h2>
+                <button class="btn-close" onclick="fecharModal('modalFiados')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <p>Total de fiados: <strong id="totalFiadosValor">R$ 0,00</strong></p>
+                    <p>Clientes: <strong id="qtdFiadosClientes">0</strong></p>
+                </div>
+
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <input type="text" id="fiadoCliente" placeholder="Nome do cliente">
+                </div>
+
+                <div class="form-group">
+                    <label>Valor</label>
+                    <input type="text" id="fiadoValor" placeholder="0,00">
+                </div>
+
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea id="fiadoDescricao" placeholder="Descrição do fiado"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="fiadoEspecial"> ⭐ Marcar como Cliente Especial
+                    </label>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-success" onclick="adicionarFiado()">➕ Adicionar Fiado</button>
+                    <button class="btn btn-secondary" onclick="fecharModal('modalFiados')">← Voltar</button>
+                </div>
+
+                <h3 class="section-title">📝 Fiados Registrados</h3>
+                <div id="listaFiados"></div>
+            </div>
+        </div>
+
+        <!-- MODAL CRÉDITOS -->
+        <div class="modal fullscreen" id="modalCreditos">
+            <div class="modal-header">
+                <h2>💳 Créditos</h2>
+                <button class="btn-close" onclick="fecharModal('modalCreditos')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <p>Total de créditos: <strong id="totalCreditosValor">R$ 0,00</strong></p>
+                    <p>Clientes: <strong id="qtdCreditosClientes">0</strong></p>
+                </div>
+
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <input type="text" id="creditoCliente" placeholder="Nome do cliente">
+                </div>
+
+                <div class="form-group">
+                    <label>Valor do Crédito</label>
+                    <input type="text" id="creditoValor" placeholder="0,00">
+                </div>
+
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea id="creditoDescricao" placeholder="Descrição do crédito"></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-success" onclick="adicionarCredito()">➕ Adicionar Crédito</button>
+                    <button class="btn btn-secondary" onclick="fecharModal('modalCreditos')">← Voltar</button>
+                </div>
+
+                <h3 class="section-title">📝 Créditos Registrados</h3>
+                <div id="listaCreditos"></div>
+            </div>
+        </div>
+
+        <!-- MODAL ENTREGADORES -->
+        <div class="modal fullscreen" id="modalEntregadores">
+            <div class="modal-header">
+                <h2>🚚 Entregadores</h2>
+                <button class="btn-close" onclick="fecharModal('modalEntregadores')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <p>Total de entregadores: <strong id="totalEntregadores">0</strong></p>
+                    <p>Ativos: <strong id="entregadoresAtivos">0</strong></p>
+                </div>
+
+                <div class="form-group">
+                    <label>Nome do Entregador</label>
+                    <input type="text" id="entregadorNome" placeholder="Nome completo">
+                </div>
+
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="text" id="entregadorTelefone" placeholder="(11) 99999-9999">
+                </div>
+
+                <div class="form-group">
+                    <label>Veículo</label>
+                    <input type="text" id="entregadorVeiculo" placeholder="Moto/Carro">
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-success" onclick="adicionarEntregador()">➕ Adicionar Entregador</button>
+                    <button class="btn btn-secondary" onclick="fecharModal('modalEntregadores')">← Voltar</button>
+                </div>
+
+                <h3 class="section-title">👥 Entregadores</h3>
+                <div id="listaEntregadores"></div>
+            </div>
+        </div>
+
+        <!-- MODAL CONFIGURAÇÃO -->
+        <div class="modal fullscreen" id="modalConfiguracao">
+            <div class="modal-header">
+                <h2>⚙️ Configurações</h2>
+                <button class="btn-close" onclick="fecharModal('modalConfiguracao')">✕</button>
+            </div>
+            <div class="modal-body">
+                <h3 class="section-title">💰 Custos de Produtos</h3>
+                <div class="form-group">
+                    <label>Custo do Gás (R$)</label>
+                    <input type="text" id="custoGas" placeholder="0,00">
+                </div>
+                <div class="form-group">
+                    <label>Custo da Água (R$)</label>
+                    <input type="text" id="custoAgua" placeholder="0,00">
+                </div>
+                <div class="form-group">
+                    <label>Custo do Regulador (R$)</label>
+                    <input type="text" id="custoRegulador" placeholder="0,00">
+                </div>
+                <div class="form-group">
+                    <label>Custo da Mangueira (R$)</label>
+                    <input type="text" id="custoMangueira" placeholder="0,00">
+                </div>
+                <div class="form-group">
+                    <label>Custo da Botija Completa (R$)</label>
+                    <input type="text" id="custoBotija" placeholder="0,00">
+                </div>
+                <div class="form-group">
+                    <label>Custo do Galão Completo (R$)</label>
+                    <input type="text" id="custoGalao" placeholder="0,00">
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="salvarCustos()">💾 Salvar Custos</button>
+                    <button class="btn btn-secondary" onclick="fecharModal('modalConfiguracao')">← Voltar</button>
+                </div>
+
+                <h3 class="section-title">📊 Balancete Mensal</h3>
+                <div id="balanceteContent"></div>
+
+                <h3 class="section-title">📄 Gerar Relatórios</h3>
+                <div class="info-box">
+                    <p>Gere PDFs com Dashboard e Vendas para salvamento diário e mensal</p>
+                </div>
+                
+                <div class="modal-actions" style="flex-direction: column; gap: 12px;">
+                    <button class="btn btn-primary" onclick="gerarPDFDiario()" style="width: 100%;">📅 Relatório Diário (PDF)</button>
+                    <button class="btn btn-primary" onclick="gerarPDFMensal()" style="width: 100%;">📆 Relatório Mensal (PDF)</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Funções para Múltipla Seleção de Vendas -->
+    <script>
+        // Armazenar IDs de vendas selecionadas
+        let vendasSelecionadas = new Set();
+
+        // Alternar seleção de uma venda individual
+        function toggleSelecaoVenda(vendaId) {
+            if (vendasSelecionadas.has(vendaId)) {
+                vendasSelecionadas.delete(vendaId);
+            } else {
+                vendasSelecionadas.add(vendaId);
+            }
+            atualizarUISelecoes();
+        }
+
+        // Selecionar todas as vendas visíveis
+        function selecionarTodasVendas() {
+            const checkboxes = document.querySelectorAll('.venda-checkbox:not([style*="display: none"])');
+            checkboxes.forEach(checkbox => {
+                const vendaId = checkbox.dataset.vendaId;
+                if (vendaId) {
+                    vendasSelecionadas.add(vendaId);
+                }
+            });
+            atualizarUISelecoes();
+        }
+
+        // Desselecionar todas as vendas
+        function desselecionarTodasVendas() {
+            vendasSelecionadas.clear();
+            atualizarUISelecoes();
+        }
+
+        // Apagar múltiplas vendas selecionadas
+        function apagarVendasSelecionadas() {
+            if (vendasSelecionadas.size === 0) {
+                alert('⚠️ Selecione pelo menos uma venda para apagar!');
+                return;
+            }
+
+            const confirmacao = confirm(`🗑️ Tem certeza que deseja apagar ${vendasSelecionadas.size} venda(s)? Esta ação não pode ser desfeita!`);
+            if (!confirmacao) return;
+
+            // Obter as vendas do localStorage
+            let vendas = JSON.parse(localStorage.getItem('vendas')) || [];
+            
+            // Filtrar as vendas não selecionadas
+            const vendasRestantes = vendas.filter(venda => {
+                const vendaId = vendas.indexOf(venda);
+                return !vendasSelecionadas.has(vendaId.toString());
+            });
+
+            // Salvar as vendas restantes
+            localStorage.setItem('vendas', JSON.stringify(vendasRestantes));
+            
+            // Limpar a seleção
+            vendasSelecionadas.clear();
+            
+            // Atualizar a exibição
+            atualizarUISelecoes();
+            
+            // Recarregar as vendas se existir a função
+            if (typeof exibirVendas === 'function') {
+                exibirVendas();
+            }
+            
+            alert(`✅ ${vendasRestantes.length === vendas.length - vendasSelecionadas.size ? '1 ou mais' : 'As'} venda(s) foi/foram apagada(s) com sucesso!`);
+        }
+
+        // Atualizar a interface de seleção
+        function atualizarUISelecoes() {
+            // Atualizar checkboxes
+            document.querySelectorAll('.venda-checkbox').forEach(checkbox => {
+                const vendaId = checkbox.dataset.vendaId;
+                const card = checkbox.closest('.venda-card');
+                
+                if (vendasSelecionadas.has(vendaId)) {
+                    checkbox.checked = true;
+                    if (card) card.classList.add('selecionada');
+                } else {
+                    checkbox.checked = false;
+                    if (card) card.classList.remove('selecionada');
+                }
+            });
+
+            // Atualizar contador
+            const contador = document.getElementById('contadorSelecao');
+            const btnSelecionarTodas = document.getElementById('btnSelecionarTodas');
+            const btnDesselecionar = document.getElementById('btnDesselecionar');
+            const btnApagarSelecionadas = document.getElementById('btnApagarSelecionadas');
+
+            if (contador) {
+                if (vendasSelecionadas.size > 0) {
+                    contador.textContent = `${vendasSelecionadas.size} venda${vendasSelecionadas.size > 1 ? 's' : ''} selecionada${vendasSelecionadas.size > 1 ? 's' : ''}`;
+                    contador.style.display = 'inline-block';
+                    if (btnApagarSelecionadas) btnApagarSelecionadas.style.display = 'inline-block';
+                } else {
+                    contador.style.display = 'none';
+                    if (btnApagarSelecionadas) btnApagarSelecionadas.style.display = 'none';
+                }
+            }
+
+            if (btnSelecionarTodas) {
+                btnSelecionarTodas.style.display = document.querySelectorAll('.venda-checkbox').length > 0 ? 'inline-block' : 'none';
+            }
+            if (btnDesselecionar) {
+                btnDesselecionar.style.display = vendasSelecionadas.size > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        // Interceptar função existente de apagar venda individual
+        const originalApagarVenda = typeof apagarVenda === 'function' ? apagarVenda : null;
+        function apagarVenda(vendaId) {
+            if (confirm('🗑️ Tem certeza que deseja apagar esta venda?')) {
+                let vendas = JSON.parse(localStorage.getItem('vendas')) || [];
+                vendas = vendas.filter((_, index) => index.toString() !== vendaId.toString());
+                localStorage.setItem('vendas', JSON.stringify(vendas));
+                
+                if (typeof exibirVendas === 'function') {
+                    exibirVendas();
+                }
+                
+                // Limpar seleção relacionada se existir
+                if (vendasSelecionadas.has(vendaId.toString())) {
+                    vendasSelecionadas.delete(vendaId.toString());
+                    atualizarUISelecoes();
+                }
+            }
+        }
+
+        // Limpar seleções ao fechar o modal de vendas
+        const originalFecharModal = typeof fecharModal === 'function' ? fecharModal : null;
+        function fecharModal(modalId) {
+            if (modalId === 'modalVendas') {
+                vendasSelecionadas.clear();
+                atualizarUISelecoes();
+            }
+            if (originalFecharModal) {
+                originalFecharModal(modalId);
+            }
+        }
+    </script>
+
+    <script src="functions.js"></script>
+</body>
+</html>
